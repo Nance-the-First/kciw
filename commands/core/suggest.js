@@ -9,7 +9,8 @@ module.exports = {
   // aliases: 's',
 
   execute: async function (message, args, Discord) {
-    const member = message.member;
+    const member = message.member; 
+    if (!message.guild || !member) return;
     const mrole = message.guild.roles.cache.find((r) =>
       r.name.toLowerCase().startsWith("mute")
     );
