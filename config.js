@@ -15,6 +15,10 @@ const settings = {
 
   channels: { debug: '840013926867271711', uploads: '840013926867271711', logs: '840013926867271711' },
 
+  suggestions: {
+    on: true,
+    channel: "827444278274818068"
+  },
 
   database: { 
     enable: false,
