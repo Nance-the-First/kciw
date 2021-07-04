@@ -14,6 +14,6 @@ module.exports = {
     const embed = new MessageEmbed()
     .setTitle(`Wick Setup Guide`)
     .setDescription(`${emojis.rightDoubleArrow} https://wickbot.com/docs/setup`)
-    message.channel.send(message)
+    message.channel.send(embed)
   },
 };
