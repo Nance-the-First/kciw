@@ -8,7 +8,7 @@ module.exports = {
   usage: "", // Help text to explain how to use the command (if it had any arguments)
   // aliases: 's',
 
-  execute: async function (message, args, Discord) {
+  run: async function (message, args, Discord) {
     const member = message.member; 
     if (!message.guild || !member) return;
     const mrole = message.guild.roles.cache.find((r) =>
