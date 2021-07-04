@@ -1,63 +1,61 @@
-/*const { MessageEmbed } = require('discord.js');
-
+const { MessageEmbed } = require("discord.js");
+const config = require(`${process.cwd()}/config.js`);
 module.exports = {
-  name: 'suggest',
-  aliases: [],
-  guildOnly: true,
-  group: 'core',
-  description: 'suggest something for the server. if you have suggestion for the bot instead please use the feedback command or join our support server',
-  clientPermissions: ['EMBED_LINKS', 'ADD_REACTIONS'],
-  parameters: ['Suggestion Message'],
-  get examples() { return this.name + ' please remove some inactive members... ' },
-  run: async (client, message, args) => {
+  name: "suggest", // The name of the command
+  description: "Suggest something for Wick!", // The description of the command (for help text)
+  // aliases: ['ab'],
+  args: false, // Specified that this command doesn't need any data other than the command
+  usage: "", // Help text to explain how to use the command (if it had any arguments)
+  // aliases: 's',
+
+  execute: async function (message, args, Discord) {
+    const member = message.member;
+    const mrole = message.guild.roles.cache.find((r) =>
+      r.name.toLowerCase().startsWith("mute")
+    );
+    if (!config.suggestions.on) {
+      return;
+    }
+    if (member.roles && member.roles.cache && mrole) {
+      if (member.roles.cache.has(mrole.id)) {
+        return message.channel.send({
+          embed: {
+            description:
+              "<:fail:809847979368120470> You seem to be muted! Muted members **cannot** submit suggestions!",
+          },
+        });
+      }
+    }
+    const suggestionQuery = args.join(" ");
+    if (!suggestionQuery)
+      return message.channel.send({
+        embed: {
+          description: "<:fail:809847979368120470> Please suggest something",
+        },
+      });
 
     const embed = new MessageEmbed()
-      // .setFooter(``)
-      .setColor('#c3abe6');
-
-    if (!args.length) {
-      return message.channel.send(
-        embed.setAuthor('no message', 'https://cdn.discordapp.com/emojis/767062250279927818.png?v=1')
-          .setColor('#c3abe6')
-          .setDescription(`**${message.member.displayName}**, please include your **suggestion message**!`)
-          .addField('example', '```m!suggest Please remove some inactive members...```')
+      .setTitle(`A new suggestion by ${message.author.tag}`)
+      .setDescription(`<:blank:809168046052474881> ${suggestionQuery}`)
+      .setTimestamp(Date.now())
+      .setThumbnail(member.user.displayAvatarURL({ dynamic: false, size: 64 }))
+      .addField(
+        "<:rightSort:809165006477459507> Status:",
+        "<:blank:809168046052474881> <:purge:812024610363146270> This suggestion is still waiting for an official answer!"
       );
-    };
 
-    const id = client.guildProfiles.get(message.guild.id).suggestChannel;
-    const channel = message.guild.channels.cache.get(id);
-
-    if (!channel) {
-      return message.channel.send(
-        embed.setAuthor('channel not found!', 'https://cdn.discordapp.com/emojis/767062250279927818.png?v=1')
-          .setColor('#c3abe6')
-          .setDescription([
-            `**${message.member.displayName}**, could not find **suggestion channel** for this server!\n`,
-            `if you are a server admin, you may set the channel by typing:`,
-            `\`${client.config.prefix}setsuggestch <channel ID | channel mention>\``
-          ].join('\n'))
-      )
-    };
-
-    if (!channel.permissionsFor(message.guild.me).has('VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS')) {
-      return message.channel.send(
-        embed.setAuthor('missing perms', 'https://cdn.discordapp.com/emojis/767062250279927818.png?v=1')
-          .setColor('#c3abe6')
-          .setDescription([
-            `**${message.member.displayName}**, the channel ${channel} does not allow me to post your suggestion there!`,
-            `i need to have the following permissions: \`view channel\`, \`send messages\`, and \`embed links\`\n\n`
-              `if you are a server admin/mod, please change my permission overwrites on the aformentioned channel.`
-          ].join(''))
-      );
-    };
-
-    return channel.send(
-      embed.setTitle(`${message.member.displayName}'s suggestion`)
-        .setColor('#c3abe6')
-        .setDescription(args.join(' '))
-        .setThumbnail(message.author.displayAvatarURL({ format: 'png', dynamic: true }))
-        .addField('status', 'under review', true)
-    ).then(() => message.react('<:check:797676580943691829>'));
-  }
+    message.channel.send({
+      embed: {
+        color: "#36393f",
+        description: "<:check:809847958878552164> Suggestion submitted",
+      },
+    });
+    message.guild.channels.cache
+      .get(config.suggestions.channel)
+      .send(embed)
+      .then((m) => {
+        m.react("809847958878552164");
+        m.react("809847979368120470");
+      });
+  },
 };
-*/
